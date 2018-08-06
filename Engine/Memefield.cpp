@@ -58,7 +58,7 @@ MemeField::MemeField(int nMemes)
 		{
 			coordinates = { xDistribution(rng), yDistribution(rng) };
 			
-		} while (!TileAt(coordinates).HasMeme());
+		} while (TileAt(coordinates).HasMeme());
 
 		TileAt(coordinates).SpawnMeme();
 		
