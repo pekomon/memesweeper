@@ -27,6 +27,7 @@ private:
 public:
 	MemeField(int nMemes);
 	void Draw(Graphics& gfx) const;
+	RectI GetRect() const;
 
 private:
 	Tile& TileAt(const Vei2& gridposition);
