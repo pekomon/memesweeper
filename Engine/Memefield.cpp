@@ -43,6 +43,35 @@ void MemeField::Tile::Draw(const Vei2 screenPos, Graphics & gfx) const
 	}
 }
 
+void MemeField::Tile::Open()
+{
+	assert(state == State::Hidden);
+	state = State::Opened;
+}
+
+bool MemeField::Tile::IsOpened() const
+{
+	
+	return state == State::Opened;
+}
+
+void MemeField::Tile::ToggleFlag()
+{
+	if (state == State::Flagged)
+	{
+		state = State::Hidden;
+	}
+	else if (state == State::Hidden)
+	{
+		state = State::Flagged;
+	}
+}
+
+bool MemeField::Tile::IsFlagged()
+{
+	return state == State::Flagged;
+}
+
 MemeField::MemeField(int nMemes)
 {
 	assert(nMemes > 0 && nMemes < width * height);
@@ -63,6 +92,7 @@ MemeField::MemeField(int nMemes)
 		TileAt(coordinates).SpawnMeme();
 		
 	}
+
 }
 
 void MemeField::Draw(Graphics & gfx) const
@@ -85,6 +115,26 @@ RectI MemeField::GetRect() const
 	return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
 }
 
+void MemeField::OnOpenClick(const Vei2 screenCoordinates)
+{
+	const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
+
+	if (!TileAt(gridCoords).IsOpened() && !TileAt(gridCoords).IsFlagged())
+	{
+		TileAt(gridCoords).Open();
+	}
+}
+
+void MemeField::OnFlagClick(const Vei2 screenCoordinates)
+{
+	const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
+	
+	if (!TileAt(gridCoords).IsOpened())
+	{
+		TileAt(gridCoords).ToggleFlag();
+	}
+}
+
 
 MemeField::Tile& MemeField::TileAt(const Vei2& gridposition)
 {
@@ -95,4 +145,9 @@ MemeField::Tile& MemeField::TileAt(const Vei2& gridposition)
 const MemeField::Tile& MemeField::TileAt(const Vei2& gridposition) const
 {
 	return tiles[gridposition.y * width + gridposition.x];
+}
+
+Vei2 MemeField::ScreenCoord2GridCoord(const Vei2 screenCoordinates) const
+{
+	return screenCoordinates / SpriteCodex::tileSize;
 }
