@@ -18,29 +18,72 @@ void MemeField::Tile::SpawnMeme()
 
 }
 
-void MemeField::Tile::Draw(const Vei2 screenPos, Graphics & gfx) const
+void MemeField::Tile::Draw(const Vei2 screenPos, const bool gameOver, Graphics & gfx) const
 {
-	switch (state)
+	if (!gameOver)
 	{
-	case MemeField::Tile::State::Hidden:
-		SpriteCodex::DrawTileButton(screenPos, gfx);
-		break;
-	case MemeField::Tile::State::Flagged:
-		SpriteCodex::DrawTileButton(screenPos, gfx);
-		SpriteCodex::DrawTileFlag(screenPos, gfx);
-		break;
-	case MemeField::Tile::State::Opened:
-		if (!hasMeme)
-		{	
-			SpriteCodex::DrawTile( nNeighbourMemes ,screenPos, gfx);
-		}
-		else 
+		switch (state)
 		{
-			SpriteCodex::DrawTileBomb(screenPos, gfx);
+		case MemeField::Tile::State::Hidden:
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			break;
+		case MemeField::Tile::State::Flagged:
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			SpriteCodex::DrawTileFlag(screenPos, gfx);
+			break;
+		case MemeField::Tile::State::Opened:
+			if (!hasMeme)
+			{
+				SpriteCodex::DrawTile(nNeighbourMemes, screenPos, gfx);
+			}
+			else
+			{
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+			}
+			break;
+		default:
+			break;
 		}
-		break;
-	default:
-		break;
+	}
+	else //game over
+	{
+		switch (state)
+		{
+		case MemeField::Tile::State::Hidden:
+			if (HasMeme())
+			{
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+			}
+			else
+			{
+				SpriteCodex::DrawTileButton(screenPos, gfx);
+			}
+			break;
+		case MemeField::Tile::State::Flagged:
+			if (HasMeme())
+			{
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+				SpriteCodex::DrawTileFlag(screenPos, gfx);
+			}
+			else
+			{
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+				SpriteCodex::DrawTileCross(screenPos, gfx);
+			}
+			break;
+		case MemeField::Tile::State::Opened:
+			if (!hasMeme)
+			{
+				SpriteCodex::DrawTile(nNeighbourMemes, screenPos, gfx);
+			}
+			else
+			{
+				SpriteCodex::DrawTileBombRed(screenPos, gfx);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -123,7 +166,7 @@ void MemeField::Draw(Graphics & gfx) const
 	{
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
 		{
-			TileAt(gridPos).Draw( gridPos * SpriteCodex::tileSize, gfx);
+			TileAt(gridPos).Draw( gridPos * SpriteCodex::tileSize, isFailed, gfx);
 		}
 
 	}
@@ -137,21 +180,31 @@ RectI MemeField::GetRect() const
 
 void MemeField::OnOpenClick(const Vei2 screenCoordinates)
 {
-	const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
-
-	if (!TileAt(gridCoords).IsOpened() && !TileAt(gridCoords).IsFlagged())
+	if (!isFailed)
 	{
-		TileAt(gridCoords).Open();
+		const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
+
+		if (!TileAt(gridCoords).IsOpened() && !TileAt(gridCoords).IsFlagged())
+		{
+			TileAt(gridCoords).Open();
+			if (TileAt(gridCoords).HasMeme())
+			{
+				isFailed = true;
+			}
+		}
 	}
 }
 
 void MemeField::OnFlagClick(const Vei2 screenCoordinates)
 {
-	const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
-	
-	if (!TileAt(gridCoords).IsOpened())
+	if (!isFailed)
 	{
-		TileAt(gridCoords).ToggleFlag();
+		const Vei2 gridCoords = ScreenCoord2GridCoord(screenCoordinates);
+
+		if (!TileAt(gridCoords).IsOpened())
+		{
+			TileAt(gridCoords).ToggleFlag();
+		}
 	}
 }
 

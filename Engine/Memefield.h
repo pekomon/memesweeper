@@ -17,7 +17,7 @@ private:
 	public:
 		bool HasMeme() const;
 		void SpawnMeme();
-		void Draw(const Vei2 screenPos, Graphics& gfx) const;
+		void Draw(const Vei2 screenPos, const bool gameOver, Graphics& gfx) const;
 		void Open();
 		bool IsOpened() const;
 		void ToggleFlag();
@@ -44,8 +44,9 @@ private:
 	Vei2 ScreenCoord2GridCoord(const Vei2 screenCoordinates) const;
 	int CountNeighbourMemes(const Vei2& gridPosition);
 private:
-	static constexpr int width = 14;
-	static constexpr int height = 16;
+	static constexpr int width = 24;
+	static constexpr int height = 20;
+	bool isFailed = false;
 
 	Tile tiles[width*height];
 
