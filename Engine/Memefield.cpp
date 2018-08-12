@@ -172,10 +172,7 @@ int MemeField::CountNeighbourMemes(const Vei2 & gridPosition)
 			if (TileAt({ x,y }).HasMeme()) 
 			{
 				memes++;
-				if (memes > 8)
-				{
-					assert(false);
-				}
+				assert(memes < 9);
 			}
 		}
 	}
