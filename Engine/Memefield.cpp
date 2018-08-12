@@ -3,6 +3,7 @@
 #include <random>
 #include "Vei2.h"
 #include "SpriteCodex.h"
+#include <algorithm>
 
 bool MemeField::Tile::HasMeme() const
 {
@@ -31,7 +32,7 @@ void MemeField::Tile::Draw(const Vei2 screenPos, Graphics & gfx) const
 	case MemeField::Tile::State::Opened:
 		if (!hasMeme)
 		{	
-			SpriteCodex::DrawTile0(screenPos, gfx);
+			SpriteCodex::DrawTile( nNeighbourMemes ,screenPos, gfx);
 		}
 		else 
 		{
@@ -72,6 +73,13 @@ bool MemeField::Tile::IsFlagged()
 	return state == State::Flagged;
 }
 
+void MemeField::Tile::setNeighbourMemes(int nMemes)
+{
+	assert(nNeighbourMemes = -1);
+	assert(nMemes >= 0 && nMemes <= 8);
+	nNeighbourMemes = nMemes;
+}
+
 MemeField::MemeField(int nMemes)
 {
 	assert(nMemes > 0 && nMemes < width * height);
@@ -91,6 +99,18 @@ MemeField::MemeField(int nMemes)
 
 		TileAt(coordinates).SpawnMeme();
 		
+	}
+
+	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++)
+	{
+		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
+		{
+			if (!TileAt(gridPos).HasMeme())
+			{
+				TileAt(gridPos).setNeighbourMemes(CountNeighbourMemes(gridPos));
+			}
+		}
+
 	}
 
 }
@@ -133,6 +153,33 @@ void MemeField::OnFlagClick(const Vei2 screenCoordinates)
 	{
 		TileAt(gridCoords).ToggleFlag();
 	}
+}
+
+int MemeField::CountNeighbourMemes(const Vei2 & gridPosition)
+{
+
+	const int startX = std::max(0, gridPosition.x - 1);
+	const int endX = std::min(gridPosition.x + 1, width-1);
+
+	const int startY = std::max(0, gridPosition.y - 1);
+	const int endY = std::min(gridPosition.y + 1, height-1);
+
+	int memes = 0;
+	for (int x = startX; x <= endX; x++)
+	{
+		for (int y = startY; y <= endY; y++)
+		{
+			if (TileAt({ x,y }).HasMeme()) 
+			{
+				memes++;
+				if (memes > 8)
+				{
+					assert(false);
+				}
+			}
+		}
+	}
+	return memes;
 }
 
 

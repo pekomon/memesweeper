@@ -22,11 +22,12 @@ private:
 		bool IsOpened() const;
 		void ToggleFlag();
 		bool IsFlagged();
-
+		void setNeighbourMemes(int nMemes);
 		
 	private:
 		State state = State::Hidden;
 		bool hasMeme = false;
+		int nNeighbourMemes = -1;
 
 	};
 
@@ -36,13 +37,15 @@ public:
 	RectI GetRect() const;
 	void OnOpenClick(const Vei2 screenCoordinates);
 	void OnFlagClick(const Vei2 screenCoordinates);
+	
 private:
 	Tile& TileAt(const Vei2& gridposition);
 	const Tile& TileAt(const Vei2& gridposition) const;
 	Vei2 ScreenCoord2GridCoord(const Vei2 screenCoordinates) const;
+	int CountNeighbourMemes(const Vei2& gridPosition);
 private:
-	static constexpr int width = 24;
-	static constexpr int height = 20;
+	static constexpr int width = 14;
+	static constexpr int height = 16;
 
 	Tile tiles[width*height];
 
