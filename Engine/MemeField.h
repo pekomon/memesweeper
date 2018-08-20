@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics.h"
+#include "Sound.h"
 
 class MemeField
 {
@@ -34,11 +35,14 @@ public:
 	RectI GetRect() const;
 	void OnRevealClick( const Vei2& screenPos );
 	void OnFlagClick( const Vei2& screenPos );
+	bool IsGameWon() const;
+	bool IsGameLost() const;
 private:
 	Tile& TileAt( const Vei2& gridPos );
 	const Tile& TileAt( const Vei2& gridPos ) const;
 	Vei2 ScreenToGrid( const Vei2& screenPos );
 	int CountNeighborMemes( const Vei2& gridPos );
+	
 private:
 	static constexpr int width = 20;
 	static constexpr int height = 16;
@@ -46,5 +50,5 @@ private:
 	Tile field[width * height];
 	const Vei2 offset = { 220, 200 }; 
 	static constexpr int borderWidth = 20;
-
+	Sound soundLose = Sound( L"spayed.wav");
 };
