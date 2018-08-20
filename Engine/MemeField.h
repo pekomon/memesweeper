@@ -44,5 +44,7 @@ private:
 	static constexpr int height = 16;
 	bool isFucked = false;
 	Tile field[width * height];
-	const Vei2 offset = { 220, 200 };
+	const Vei2 offset = { 220, 200 }; 
+	static constexpr int borderWidth = 20;
+
 };
