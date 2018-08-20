@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field( 20 )
+	field( 1 )
 {
 }
 
@@ -43,20 +43,25 @@ void Game::UpdateModel()
 	while( !wnd.mouse.IsEmpty() )
 	{
 		const auto e = wnd.mouse.Read();
-		if( e.GetType() == Mouse::Event::Type::LPress )
+
+		if (field.GetState() == MemeField::State::Playing)
 		{
-			const Vei2 mousePos = e.GetPos();
-			if( field.GetRect().Contains( mousePos ) )
+
+			if (e.GetType() == Mouse::Event::Type::LPress)
 			{
-				field.OnRevealClick( mousePos );
+				const Vei2 mousePos = e.GetPos();
+				if (field.GetRect().Contains(mousePos))
+				{
+					field.OnRevealClick(mousePos);
+				}
 			}
-		}
-		else if( e.GetType() == Mouse::Event::Type::RPress )
-		{
-			const Vei2 mousePos = e.GetPos();
-			if( field.GetRect().Contains( mousePos ) )
+			else if (e.GetType() == Mouse::Event::Type::RPress)
 			{
-				field.OnFlagClick( mousePos );
+				const Vei2 mousePos = e.GetPos();
+				if (field.GetRect().Contains(mousePos))
+				{
+					field.OnFlagClick(mousePos);
+				}
 			}
 		}
 	}
@@ -65,7 +70,7 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	field.Draw( gfx );
-	if (field.IsGameWon())
+	if ( field.GetState() == MemeField::State::Won)
 	{
 		SpriteCodex::DrawWin(Vei2(200, 200), gfx);
 
